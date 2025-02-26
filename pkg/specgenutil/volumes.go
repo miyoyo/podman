@@ -390,6 +390,9 @@ func parseMountOptions(mountType string, args []string) (*universalMount, error)
 			if !hasValue {
 				return nil, fmt.Errorf("%v: %w", name, errOptionArg)
 			}
+			if !filepath.IsAbs(value) {
+				return nil, fmt.Errorf("volume subpath %q must be an absolute path", value)
+			}
 			mnt.subPath = value
 		case "target", "dst", "destination":
 			if mnt.mount.Destination != "" {
@@ -613,9 +616,9 @@ func getImageVolume(args []string) (*specgen.ImageVolume, error) {
 
 	mnt, err := parseMountOptions(define.TypeImage, args)
 	if err != nil {
-				return nil, err
-			}
-			
+		return nil, err
+	}
+
 	newVolume.Options = mnt.mount.Options
 	newVolume.SubPath = mnt.subPath
 	newVolume.Source = mnt.mount.Source
