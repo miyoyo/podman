@@ -9,4 +9,6 @@ const (
 	TypeRamfs = "ramfs"
 	// TypeVolume is the type for named volumes
 	TypeVolume = "volume"
+	// TypeImage is the type for mounting container images
+	TypeImage = "image"
 )

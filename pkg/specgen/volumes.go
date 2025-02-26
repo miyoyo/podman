@@ -53,6 +53,8 @@ type ImageVolume struct {
 	Destination string
 	// ReadWrite sets the volume writable.
 	ReadWrite bool
+	// Options holds image volume options
+	Options []string `json:"options,omitempty"`
 	// SubPath mounts a particular path within the image.
 	// If empty, the whole image is mounted.
 	SubPath string `json:"subPath,omitempty"`

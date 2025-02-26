@@ -276,6 +276,8 @@ type ContainerImageVolume struct {
 	Dest string `json:"dest"`
 	// ReadWrite sets the volume writable.
 	ReadWrite bool `json:"rw"`
+	// Options are fstab style mount options
+	Options []string `json:"options,omitempty"`
 	// SubPath determines which part of the image will be mounted into the container.
 	SubPath string `json:"subPath,omitempty"`
 }

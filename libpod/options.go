@@ -1508,6 +1508,7 @@ func WithImageVolumes(volumes []*ContainerImageVolume) CtrCreateOption {
 				Source:    vol.Source,
 				ReadWrite: vol.ReadWrite,
 				SubPath:   vol.SubPath,
+				Options:   vol.Options,
 			})
 		}
 

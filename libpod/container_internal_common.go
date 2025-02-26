@@ -472,7 +472,7 @@ func (c *Container) generateSpec(ctx context.Context) (s *spec.Spec, cleanupFunc
 		}
 
 		var overlayMount spec.Mount
-		if volume.ReadWrite {
+		if slices.Contains(volume.Options, "rw") || volume.ReadWrite {
 			overlayMount, err = overlay.Mount(contentDir, imagePath, volume.Dest, c.RootUID(), c.RootGID(), c.runtime.store.GraphOptions())
 		} else {
 			overlayMount, err = overlay.MountReadOnly(contentDir, imagePath, volume.Dest, c.RootUID(), c.RootGID(), c.runtime.store.GraphOptions())
@@ -480,6 +480,7 @@ func (c *Container) generateSpec(ctx context.Context) (s *spec.Spec, cleanupFunc
 		if err != nil {
 			return nil, nil, fmt.Errorf("creating overlay mount for image %q failed: %w", volume.Source, err)
 		}
+		overlayMount.Options = append(overlayMount.Options, volume.Options...)
 		g.AddMount(overlayMount)
 	}
 

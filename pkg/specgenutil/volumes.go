@@ -611,47 +611,15 @@ func getNamedVolume(args []string) (*specgen.NamedVolume, error) {
 func getImageVolume(args []string) (*specgen.ImageVolume, error) {
 	newVolume := new(specgen.ImageVolume)
 
-	for _, arg := range args {
-		name, value, hasValue := strings.Cut(arg, "=")
-		switch name {
-		case "src", "source":
-			if !hasValue {
-				return nil, fmt.Errorf("%v: %w", name, errOptionArg)
-			}
-			newVolume.Source = value
-		case "target", "dst", "destination":
-			if !hasValue {
-				return nil, fmt.Errorf("%v: %w", name, errOptionArg)
-			}
-			if err := parse.ValidateVolumeCtrDir(value); err != nil {
+	mnt, err := parseMountOptions(define.TypeImage, args)
+	if err != nil {
 				return nil, err
 			}
-			newVolume.Destination = unixPathClean(value)
-		case "rw", "readwrite":
-			switch value {
-			case "true":
-				newVolume.ReadWrite = true
-			case "false":
-				// Nothing to do. RO is default.
-			default:
-				return nil, fmt.Errorf("invalid rw value %q: %w", value, util.ErrBadMntOption)
-			}
-		case "subpath":
-			if !hasValue {
-				return nil, fmt.Errorf("%v: %w", name, errOptionArg)
-			}
-			if !filepath.IsAbs(value) {
-				return nil, fmt.Errorf("volume subpath %q must be an absolute path", value)
-			}
-			newVolume.SubPath = value
-		case "consistency":
-			// Often used on MACs and mistakenly on Linux platforms.
-			// Since Docker ignores this option so shall we.
-			continue
-		default:
-			return nil, fmt.Errorf("%s: %w", name, util.ErrBadMntOption)
-		}
-	}
+			
+	newVolume.Options = mnt.mount.Options
+	newVolume.SubPath = mnt.subPath
+	newVolume.Source = mnt.mount.Source
+	newVolume.Destination = mnt.mount.Destination
 
 	if len(newVolume.Source)*len(newVolume.Destination) == 0 {
 		return nil, errors.New("must set source and destination for image volume")
