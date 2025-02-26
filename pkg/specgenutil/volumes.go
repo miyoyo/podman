@@ -384,7 +384,7 @@ func parseMountOptions(mountType string, args []string) (*universalMount, error)
 			}
 			mnt.mount.Source = value
 		case "subpath", "volume-subpath":
-			if mountType != define.TypeVolume {
+			if mountType != define.TypeVolume && mountType != define.TypeImage {
 				return nil, fmt.Errorf("cannot set option %q on non-volume mounts", name)
 			}
 			if !hasValue {
